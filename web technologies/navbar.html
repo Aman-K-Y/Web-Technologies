@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Navigation Bar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0f;
+      --nav-bg: rgba(10,10,15,0.85);
+      --border: rgba(255,255,255,0.08);
+      --accent: #c8f53f;
+      --text: #f0f0ee;
+      --muted: rgba(240,240,238,0.5);
+      --nav-h: 70px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--nav-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+    }
+
+    /* Logo */
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.45rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .logo span {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.7; }
+    }
+
+    /* ── DESKTOP MENU ── */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 50px;
+      letter-spacing: 0.01em;
+      transition: color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+    .nav-links a.active {
+      color: var(--bg);
+      background: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-cta {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--bg) !important;
+      background: var(--accent) !important;
+      padding: 0.5rem 1.2rem !important;
+      border-radius: 50px !important;
+      letter-spacing: 0.01em;
+      transition: transform 0.15s, box-shadow 0.15s !important;
+    }
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(200,245,63,0.35);
+      background: #d6ff44 !important;
+    }
+
+    /* ── HAMBURGER ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      transition: border-color 0.2s, background 0.2s;
+      z-index: 1100;
+    }
+    .hamburger:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); }
+    .hamburger span {
+      display: block;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.35s cubic-bezier(.77,0,.18,1), opacity 0.2s, width 0.3s;
+      transform-origin: center;
+    }
+    .hamburger span:nth-child(3) { width: 65%; }
+
+    /* ── MOBILE OVERLAY MENU ── */
+    .mobile-menu {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(320px, 85vw);
+      height: 100vh;
+      background: #111118;
+      border-left: 1px solid var(--border);
+      z-index: 1050;
+      display: flex;
+      flex-direction: column;
+      padding: 6rem 2rem 2.5rem;
+      gap: 0.4rem;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(.77,0,.18,1);
+      /* shadow */
+      box-shadow: -20px 0 60px rgba(0,0,0,0.6);
+    }
+    .mobile-menu.open { transform: translateX(0); }
+
+    .mobile-menu a {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: -0.02em;
+      transition: color 0.2s, padding-left 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mobile-menu a::before {
+      content: '→';
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.2s, transform 0.25s;
+      color: var(--accent);
+    }
+    .mobile-menu a:hover {
+      color: var(--text);
+      padding-left: 0.5rem;
+    }
+    .mobile-menu a:hover::before { opacity: 1; transform: translateX(0); }
+    .mobile-menu a.active { color: var(--accent); }
+
+    .mobile-cta {
+      margin-top: 1.5rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem !important;
+      font-weight: 700 !important;
+      color: var(--bg) !important;
+      background: var(--accent);
+      padding: 0.85rem 1.5rem !important;
+      border-radius: 12px;
+      text-align: center;
+      border-bottom: none !important;
+      justify-content: center;
+      transition: transform 0.15s, box-shadow 0.15s !important;
+    }
+    .mobile-cta:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 24px rgba(200,245,63,0.35);
+    }
+    .mobile-cta::before { display: none !important; }
+
+    /* Close button */
+    .close-btn {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .close-btn:hover { background: rgba(255,255,255,0.12); transform: rotate(90deg); }
+    .close-btn svg { width: 16px; height: 16px; stroke: var(--text); }
+    .mobile-menu.open .close-btn { display: flex; }
+
+    /* Overlay backdrop */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px);
+      z-index: 1040;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s;
+    }
+    .backdrop.show { opacity: 1; pointer-events: all; }
+
+    /* ── HERO (demo) ── */
+    .hero {
+      padding-top: calc(var(--nav-h) + 5rem);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(200,245,63,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 8vw, 5.5rem);
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      max-width: 480px;
+      line-height: 1.7;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(200,245,63,0.3);
+      border-radius: 50px;
+      padding: 0.35rem 1rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      nav { padding: 0 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Backdrop -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="logo">Axon<span></span></a>
+
+    <!-- Desktop links -->
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Work</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#" class="nav-cta">Get Started</a></li>
+    </ul>
+
+    <!-- Hamburger (mobile) -->
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="close-btn" id="closeBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <a href="#" class="active">Home</a>
+    <a href="#">About</a>
+    <a href="#">Work</a>
+    <a href="#">Services</a>
+    <a href="#">Blog</a>
+    <a href="#" class="mobile-cta">Get Started →</a>
+  </div>
+
+  <!-- Demo Hero -->
+  <section class="hero">
+    <div class="tag">✦ Responsive Nav Demo</div>
+    <h1>Build things<br/>that <em>matter.</em></h1>
+    <p>Resize the window below 800px to see the mobile hamburger menu slide in from the right.</p>
+  </section>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const closeBtn   = document.getElementById('closeBtn');
+    const backdrop   = document.getElementById('backdrop');
+
+    function openMenu() {
+      mobileMenu.classList.add('open');
+      backdrop.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      backdrop.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    hamburger.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    backdrop.addEventListener('click', closeMenu);
+
+    // Close on ESC
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+    // Close if window resizes above breakpoint
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 800) closeMenu();
+    });
+  </script>
+</body>
+</html>
